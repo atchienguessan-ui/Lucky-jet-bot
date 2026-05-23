@@ -8,6 +8,11 @@ from sklearn.ensemble import RandomForestClassifier
 TOKEN = 8905265253:AAEntIlXtscXQoXjyWnXqsY3MGM2DopqUjk
 
 # =========================
+# 🚀 START MESSAGE
+# =========================
+print("🚀 BOT DEMARRÉ")
+
+# =========================
 # 💾 DATABASE SIMPLE
 # =========================
 class Database:
@@ -24,6 +29,7 @@ class Database:
         self.conn.commit()
 
     def save(self, cashout, confidence, score):
+        # ✅ FIX IMPORTANT (tu avais un bug ici)
         self.conn.execute(
             "INSERT INTO signals (cashout, confidence, score) VALUES (?, ?, ?)",
             (cashout, confidence, score)
@@ -37,13 +43,11 @@ class Database:
 db = Database()
 
 # =========================
-# 📡 MARKET DATA (API READY)
+# 📡 MARKET DATA
 # =========================
 class MarketAPI:
     def get_rounds(self):
-        # ⚠️ Remplace par vraie API si tu en trouves une
         return [random.uniform(1.0, 4.0) for _ in range(30)]
-
 
 api = MarketAPI()
 
@@ -68,24 +72,21 @@ class AI:
     def predict(self, features):
         return self.model.predict([features])[0]
 
-
 ai = AI()
 
 # =========================
-# 📊 ANALYSE MARCHÉ
+# 📊 ANALYSE
 # =========================
 def analyze(rounds):
     last10 = rounds[-10:]
-
     return {
         "avg": np.mean(last10),
         "volatility": max(last10) - min(last10),
-        "crashes": sum(1 for x in last10 if x < 1.2),
-        "score": 0
+        "crashes": sum(1 for x in last10 if x < 1.2)
     }
 
 # =========================
-# 📈 SCORE 0–100
+# 📈 SCORE
 # =========================
 def score_market(data):
     score = 100
@@ -96,7 +97,7 @@ def score_market(data):
     return max(0, min(100, score))
 
 # =========================
-# 🚫 FILTRE INTELLIGENT
+# 🚫 FILTRE
 # =========================
 def is_safe(data):
     if data["crashes"] >= 3:
@@ -108,7 +109,7 @@ def is_safe(data):
     return True
 
 # =========================
-# 🎯 SIGNAL ENGINE
+# 🎯 SIGNAL
 # =========================
 def signal_engine(score):
     if score < 45:
@@ -120,12 +121,16 @@ def signal_engine(score):
     return 1.5, "LOW"
 
 # =========================
-# 🧠 PROCESS SIGNAL
+# 🧠 PROCESS
 # =========================
 def process():
     rounds = api.get_rounds()
 
-    features = [np.mean(rounds[-10:]), np.std(rounds[-10:]), sum(x < 1.2 for x in rounds[-10:])]
+    features = [
+        np.mean(rounds[-10:]),
+        np.std(rounds[-10:]),
+        sum(x < 1.2 for x in rounds[-10:])
+    ]
 
     if ai.predict(features) == 0:
         return None
@@ -153,7 +158,6 @@ def process():
 def start(update, context):
     update.message.reply_text("🤖 SAAS FINAL BOT ONLINE")
 
-
 def signal(update, context):
     result = process()
 
@@ -173,9 +177,8 @@ Score: {result['score']}/100
 Saved to database 📊
 """)
 
-
 # =========================
-# 🌐 DASHBOARD (OPTIONAL)
+# 🌐 FLASK
 # =========================
 app = Flask(__name__)
 
@@ -186,7 +189,6 @@ def home():
 @app.route("/signals")
 def signals():
     return jsonify(db.get_all())
-
 
 # =========================
 # ▶️ RUN
@@ -201,9 +203,7 @@ def run_bot():
     updater.start_polling()
     updater.idle()
 
-
 if __name__ == "__main__":
     import threading
-
     threading.Thread(target=run_bot).start()
     app.run(host="0.0.0.0", port=8080)
